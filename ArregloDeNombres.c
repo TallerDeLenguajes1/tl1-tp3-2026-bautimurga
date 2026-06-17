@@ -7,6 +7,7 @@ esa constante global puedo modificar la cantidad de nombres y el código va a se
 
 void escribirNombres(char *nombres[]);
 void MostrarPersonas(char *nombres[]);
+void InterfazBusqueda(char *nombres[]);
 int BuscarNombrePalabra(char *nombres[]);
 void mostrarBuscado(char *nombres[], int buscado);
 void BuscarNombreID(char *nombres[]);
@@ -16,8 +17,7 @@ int main() {
     char *nombres[CANT_NOMBRES]; //En este arreglo voy a guardar mis 5 nombres
     escribirNombres(nombres);
     MostrarPersonas(nombres);
-    mostrarBuscado(nombres, BuscarNombrePalabra(nombres));
-    BuscarNombreID(nombres);
+    InterfazBusqueda(nombres);
     liberarMemoria(nombres);
     return 0;
 }
@@ -52,8 +52,9 @@ int BuscarNombrePalabra(char *nombres[]) {
     char *buff;
     buff=(char *)malloc(sizeof(char)*50);
     int find=-1; //Esta variable es para confirmar si se encontró algo
-    printf("\n________________Sistema de busqueda de nombres________________\n\n");
+    printf("\n________________Sistema de busqueda por palabra iniciada________________\n\n");
     printf("-Ingrese la busqueda: ");
+    fflush(stdin);
     gets(buff);
     for (int i = 0; i < CANT_NOMBRES && find==-1; i++) //Agrego cómo condición find==-1 para que con la primera coincidencia salga
     {
@@ -78,7 +79,7 @@ void mostrarBuscado(char *nombres[], int buscado) {
 
 void BuscarNombreID(char *nombres[]) {
     int id=0;
-    printf("\n________________Sistema de busqueda________________\n\n");
+    printf("\n________________Sistema de busqueda por ID iniciada________________\n\n");
     do
     {
         printf("Ingrese el ID de la persona buscada: "); //Los id van a ir de 1 en adelante, pero yo los voy a convertir en los respectivos índices del arreglo
@@ -93,6 +94,26 @@ void BuscarNombreID(char *nombres[]) {
     printf("-El nombre del del buscado, cuyo numero de id es %d es:\n", id+1);
     puts(nombres[id]);
     printf("\n");
+}
+
+void InterfazBusqueda(char *nombres[]) {
+    int opcion=0;
+    printf("\n________________Sistema de busqueda de nombres________________\n\n");
+    printf("1:Para busqueda por ID\n2:Para busqueda por palabra\n-Ingrese una opcion para operar: ");
+    do
+    {
+        scanf("%d", &opcion);
+        if (opcion!=1 && opcion!=2)
+        {
+            printf("Ha ingresado una opcion erronea, debe ingresar 1 o 2: ");
+        }
+    } while (opcion!=1 && opcion!=2);
+    if (opcion==1)
+    {
+        BuscarNombreID(nombres);
+    } else {
+        mostrarBuscado(nombres, BuscarNombrePalabra(nombres));
+    }
 }
 
 void liberarMemoria(char *nombres[]) {
