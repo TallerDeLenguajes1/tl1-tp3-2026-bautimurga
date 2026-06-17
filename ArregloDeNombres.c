@@ -2,18 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #define CANT_NOMBRES 5
+/*Esa constante de "CANT_NOMBRES" la pongo porque la solución es mucho mas versatil y sólo modificando 
+esa constante global puedo modificar la cantidad de nombres y el código va a seguir completamente funcional*/
 
 void escribirNombres(char *nombres[]);
 void MostrarPersonas(char *nombres[]);
-int BuscarNombre(char *nombres[]);
+int BuscarNombrePalabra(char *nombres[]);
 void mostrarBuscado(char *nombres[], int buscado);
+void BuscarNombreID(char *nombres[]);
 void liberarMemoria(char *nombres[]);
 
 int main() {
     char *nombres[CANT_NOMBRES]; //En este arreglo voy a guardar mis 5 nombres
     escribirNombres(nombres);
     MostrarPersonas(nombres);
-    mostrarBuscado(nombres, BuscarNombre(nombres));
+    mostrarBuscado(nombres, BuscarNombrePalabra(nombres));
+    BuscarNombreID(nombres);
     liberarMemoria(nombres);
     return 0;
 }
@@ -38,13 +42,13 @@ void MostrarPersonas(char *nombres[]) {
     printf("\n________________Nombres ingresados al sistema________________\n\n");
     for (int i = 0; i < CANT_NOMBRES; i++)
     {
-        printf("-El nombre numero %d es\n", i+1);
+        printf("-El nombre numero %d es:\n", i+1);
         puts(nombres[i]);
         printf("\n");
     }
 }
 
-int BuscarNombre(char *nombres[]) {
+int BuscarNombrePalabra(char *nombres[]) {
     char *buff;
     buff=(char *)malloc(sizeof(char)*50);
     int find=-1; //Esta variable es para confirmar si se encontró algo
@@ -70,6 +74,25 @@ void mostrarBuscado(char *nombres[], int buscado) {
     } else {
         printf("-ERROR en la busqueda, no se hallaron coincidencias...\n");
     }
+}
+
+void BuscarNombreID(char *nombres[]) {
+    int id=0;
+    printf("\n________________Sistema de busqueda________________\n\n");
+    do
+    {
+        printf("Ingrese el ID de la persona buscada: "); //Los id van a ir de 1 en adelante, pero yo los voy a convertir en los respectivos índices del arreglo
+        scanf("%d", &id);
+        id--; //Lo vuelvo al valor del índice
+        if (id<0||id>=CANT_NOMBRES)
+        {
+            printf("El ID ingresado no es valido, debe ser un numero del 1 al %d\n\n", CANT_NOMBRES);
+        }
+        
+    } while (id<0||id>=CANT_NOMBRES); //De 0 a 4
+    printf("-El nombre del del buscado, cuyo numero de id es %d es:\n", id+1);
+    puts(nombres[id]);
+    printf("\n");
 }
 
 void liberarMemoria(char *nombres[]) {
