@@ -78,23 +78,3 @@ void liberarMemoria(char *nombres[]) {
         free(nombres[i]);
     }
 }
-
-/*
-void BuscarNombre (char *nombres[]) {
-    int id=0;
-    printf("\n________________Sistema de busqueda________________\n\n");
-    do
-    {
-        printf("Ingrese el ID de la persona buscada: "); //Los id van a ir de 1 en adelante, pero yo los voy a convertir en los respectivos índices del arreglo
-        scanf("%d", &id);
-        id--; //Lo vuelvo al valor del índice
-        if (id<0||id>=CANT_NOMBRES)
-        {
-            printf("El ID ingresado no es valido, debe ser un numero del 1 al %d\n\n", CANT_NOMBRES);
-        }
-        
-    } while (id<0||id>=CANT_NOMBRES); //De 0 a 4
-    printf("-El nombre del del buscado, cuyo numero de id es %d es:\n", id+1);
-    puts(nombres[id]);
-    printf("\n");
-} */
