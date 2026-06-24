@@ -4,7 +4,9 @@
 #include <string.h>
 
 int cantidad_clientes=0; //Un max de 5. La declaro global ya que la usaré en muchas funciones
-char *TiposProductos[]={"Galletas", "Snack", "Cigarrillos", "Caramelos", "Bebidas"};  
+char *TiposProductos[]={"Galletas", "Snack", "Cigarrillos", "Caramelos", "Bebidas"};
+//Este arreglo lo creo para que cada producto tenga un precio determinado
+float PrecioProd[]={37.5, 18.2, 99.5, 11.7, 57.3};
 typedef struct{ 
     int ProductoID;    //Numerado en ciclo iterativo   
     int Cantidad;    // entre 1 y 10
@@ -19,22 +21,33 @@ typedef struct{
     Producto *Productos;    //El tamaño de este arreglo depende de la variable “CantidadProductosAPedir”  
 } Cliente;
 
-// void cargarProductos(Cliente *clientes, int j);
-void cargarDatosCliente(Cliente *clientes, int i);
-void cargarClientes(Cliente *clientes);
-void liberarMemoria(Cliente *clientes);
+Cliente *clientes; //Este puntero me servirá para almacenar los clientes que pidieron productos
+
+void cargarProductos(Producto *prod, int j);
+void cargarDatosCliente(int i);
+void cargarClientes();
+void liberarMemoria();
 
 int main() {
     srand(time(NULL)); //Creo que una semilla con la hora actual
-    Cliente *clientes; //Este puntero me servirá para almacenar los clientes que pidieron productos
-    cargarClientes(clientes); //Cargo todo
-    liberarMemoria(clientes); //Libero la memoria reservada de todos los punteros
+    cargarClientes(); //Cargo todo
+    liberarMemoria(); //Libero la memoria reservada de todos los punteros
     return 0;
 }
 
-// void cargarProductos(Cliente *clientes, int j);
+void cargarProductos(Producto *prod, int j) {
+    prod[j].ProductoID=j+1; //Mi ID va a ir de 1 en adelante
+    printf("__Cargando datos de producto %d__\n", prod[j].ProductoID);
+    prod[j].Cantidad=rand()%10+1; //Entre 1 y 10
+    //Voy a generar un entero random entre 0 y 4 para determinar el tipo de producto y su precio
+    int tipo=0;
+    tipo=rand()%5;
+    prod[j].TipoProducto=TiposProductos[tipo];
+    prod[j].PrecioUnitario=PrecioProd[tipo];
+    printf("El cliente pidio %d unidades de %s y el precio por unidad es $%.2f\n", prod[j].Cantidad, prod[j].TipoProducto, prod[j].PrecioUnitario);
+}
 
-void cargarDatosCliente(Cliente *clientes, int i) {
+void cargarDatosCliente(int i) {
     char *buff; //Voy a usar un puntero auxiliar para cargar los nombres
     buff=malloc(sizeof(char)*50); 
     int long_nombre=0;
@@ -48,14 +61,18 @@ void cargarDatosCliente(Cliente *clientes, int i) {
     clientes[i].NombreCliente=malloc(sizeof(char)*long_nombre);
     strcpy(clientes[i].NombreCliente, buff);
     free(buff); //Libero la memoria utilizada
+    printf("El nombre del cliente es %s\n", clientes[i].NombreCliente);
     clientes[i].CantidadProductosAPedir=rand()%5+1; //De uno a 5 productos por cliente
+    printf("L cantidad de tipos de productos que pidio el cliente es %d\n", clientes[i].CantidadProductosAPedir);
+    /*Le doy el tamaño que necesito al puntero de productos del cliente*/
+    clientes[i].Productos=malloc(sizeof(Producto)*clientes[i].CantidadProductosAPedir);
     for (int j = 0; j < clientes[i].CantidadProductosAPedir; j++) //Aca se  usa clientes[i] porque es el numero de cliente
     {
-        // cargarProductos(clientes, j);
+        cargarProductos(clientes[i].Productos, j);
     }
 }
 
-void cargarClientes(Cliente *clientes) {
+void cargarClientes() {
     printf("________________INICIADO SISTEMA DE PREVENTISTAS...________________\n\n");
     do //Me aseguro que sea entre 1 y 5
     {
@@ -72,12 +89,12 @@ void cargarClientes(Cliente *clientes) {
     clientes=malloc(sizeof(Cliente)*cantidad_clientes); //Hago que reserve la memoria que necesito
     for (int i = 0; i <cantidad_clientes; i++)
     {
-        printf("\n\n________________Sistema de registro de clientes________________\n\n");
-        cargarDatosCliente(clientes, i); //Mi ID va ser la i que pase +1, para empezar de 1 en adelante
+        printf("\n________________Sistema de registro de clientes________________\n\n");
+        cargarDatosCliente(i); //Mi ID va ser la i que pase +1, para empezar de 1 en adelante
     }
 }
 
-void liberarMemoria(Cliente *clientes) {
+void liberarMemoria() {
     for (int i = 0; i < cantidad_clientes; i++)
     {
         free(clientes[i].NombreCliente);
