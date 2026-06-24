@@ -7,6 +7,9 @@ int cantidad_clientes=0; //Un max de 5. La declaro global ya que la usaré en mu
 char *TiposProductos[]={"Galletas", "Snack", "Cigarrillos", "Caramelos", "Bebidas"};
 //Este arreglo lo creo para que cada producto tenga un precio determinado
 float PrecioProd[]={37.5, 18.2, 99.5, 11.7, 57.3};
+//Voy a hacer dos variables para mostrar el total a pagar por producto y el total del cliente
+float total_prod=0;
+float total_cliente=0;
 typedef struct{ 
     int ProductoID;    //Numerado en ciclo iterativo   
     int Cantidad;    // entre 1 y 10
@@ -23,7 +26,8 @@ typedef struct{
 
 Cliente *clientes; //Este puntero me servirá para almacenar los clientes que pidieron productos
 
-void cargarProductos(Producto *prod, int j);
+float calcularTotalProducto(Producto prod);
+void cargarProductos(int i, int j);
 void cargarDatosCliente(int i);
 void cargarClientes();
 void liberarMemoria();
@@ -35,16 +39,22 @@ int main() {
     return 0;
 }
 
-void cargarProductos(Producto *prod, int j) {
-    prod[j].ProductoID=j+1; //Mi ID va a ir de 1 en adelante
-    printf("__Cargando datos de producto %d__\n", prod[j].ProductoID);
-    prod[j].Cantidad=rand()%10+1; //Entre 1 y 10
+float calcularTotalProducto(Producto prod) {
+    return prod.PrecioUnitario*prod.Cantidad;
+}
+
+void cargarProductos(int i, int j) {
+    clientes[i].Productos[j].ProductoID=j+1; //Mi ID va a ir de 1 en adelante
+    printf("\n__Cargando datos de producto %d__\n", clientes[i].Productos[j].ProductoID);
+    clientes[i].Productos[j].Cantidad=rand()%10+1; //Entre 1 y 10
     //Voy a generar un entero random entre 0 y 4 para determinar el tipo de producto y su precio
     int tipo=0;
     tipo=rand()%5;
-    prod[j].TipoProducto=TiposProductos[tipo];
-    prod[j].PrecioUnitario=PrecioProd[tipo];
-    printf("El cliente pidio %d unidades de %s y el precio por unidad es $%.2f\n", prod[j].Cantidad, prod[j].TipoProducto, prod[j].PrecioUnitario);
+    clientes[i].Productos[j].TipoProducto=TiposProductos[tipo];
+    clientes[i].Productos[j].PrecioUnitario=PrecioProd[tipo];
+    printf("El cliente pidio %d unidades de %s y el precio por unidad es $%.2f\n", clientes[i].Productos[j].Cantidad, clientes[i].Productos[j].TipoProducto, clientes[i].Productos[j].PrecioUnitario);
+    total_prod=calcularTotalProducto(clientes[i].Productos[j]);
+    printf("El total del producto es $%.2f\n", total_prod);
 }
 
 void cargarDatosCliente(int i) {
@@ -52,7 +62,7 @@ void cargarDatosCliente(int i) {
     buff=malloc(sizeof(char)*50); 
     int long_nombre=0;
     clientes[i].ClienteID=i+1; //Mi id va a ser el número que va en interacion +1
-    printf("__Cliente numero: %d__\n", clientes[i].ClienteID);
+    printf("_______Cliente numero: %d_______\n", clientes[i].ClienteID);
     printf("-Ingrese el nombre del cliente: ");
     fflush(stdin); //Limpio el buffer
     gets(buff);
@@ -63,13 +73,16 @@ void cargarDatosCliente(int i) {
     free(buff); //Libero la memoria utilizada
     printf("El nombre del cliente es %s\n", clientes[i].NombreCliente);
     clientes[i].CantidadProductosAPedir=rand()%5+1; //De uno a 5 productos por cliente
-    printf("L cantidad de tipos de productos que pidio el cliente es %d\n", clientes[i].CantidadProductosAPedir);
+    printf("La cantidad de tipos de productos que pidio el cliente es de %d\n", clientes[i].CantidadProductosAPedir);
     /*Le doy el tamaño que necesito al puntero de productos del cliente*/
     clientes[i].Productos=malloc(sizeof(Producto)*clientes[i].CantidadProductosAPedir);
     for (int j = 0; j < clientes[i].CantidadProductosAPedir; j++) //Aca se  usa clientes[i] porque es el numero de cliente
     {
-        cargarProductos(clientes[i].Productos, j);
+        cargarProductos(i, j);
+        total_cliente+=total_prod;
     }
+    printf("\n__________TOTAL A PAGAR: $%.2f__________\n", total_cliente);
+    total_cliente=0; //Debo reiniciar para el próximo cliente
 }
 
 void cargarClientes() {
@@ -78,18 +91,18 @@ void cargarClientes() {
     {
         printf("-Ingrese cuantos clientes va a visitar hoy: ");
         scanf("%d", &cantidad_clientes);
-        if (cantidad_clientes>6)
+        if (cantidad_clientes>5)
         {
             printf("ERROR: No se puede visitar mas de 5 clientes\n");
         } else if (cantidad_clientes<1)
         {
             printf("ERROR: Debe visitar al menos un cliente\n");
         }
-    } while (cantidad_clientes>6||cantidad_clientes<1);
+    } while (cantidad_clientes>5||cantidad_clientes<1);
     clientes=malloc(sizeof(Cliente)*cantidad_clientes); //Hago que reserve la memoria que necesito
     for (int i = 0; i <cantidad_clientes; i++)
     {
-        printf("\n________________Sistema de registro de clientes________________\n\n");
+        printf("\n\n________________Sistema de registro de clientes________________\n\n");
         cargarDatosCliente(i); //Mi ID va ser la i que pase +1, para empezar de 1 en adelante
     }
 }
